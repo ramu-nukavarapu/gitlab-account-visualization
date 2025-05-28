@@ -2,26 +2,29 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 
-# ✅ This MUST be the first Streamlit command
 st.set_page_config(layout="wide")
-
 st.title("👥 GitLab Account Dashboard")
 
-# --- 🔘 Choose CSV Source ---
+# Initialize session_state variable if not present
+if 'selected_group' not in st.session_state:
+    st.session_state.selected_group = None
+
 st.subheader("Select User Group")
 col1, col2 = st.columns(2)
 
-selected_group = None
 with col1:
     if st.button("🧠 AI Developers"):
-        selected_group = "aidevelopers_gitlab_collegewise.csv"
+        st.session_state.selected_group = "aidevelopers_gitlab_collegewise.csv"
 with col2:
     if st.button("🛠️ Tech Leads"):
-        selected_group = "techlead_gitlab_collegewise.csv"
+        st.session_state.selected_group = "techlead_gitlab_collegewise.csv"
 
-if not selected_group:
+if st.session_state.selected_group is None:
     st.warning("Please select a group to load the data.")
     st.stop()
+
+# Use the persisted selected group
+selected_group = st.session_state.selected_group
 
 # Load data
 try:
@@ -29,6 +32,9 @@ try:
 except FileNotFoundError:
     st.error(f"Could not find `{selected_group}`.")
     st.stop()
+
+# ... rest of your code ...
+
 
 df.fillna('Unknown', inplace=True)
 
